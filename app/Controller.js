@@ -21,7 +21,7 @@ Conference.controller = (function ($, dataContext, document) {
     // We also don't want the usual page transition effect but
     // rather to have no transition (i.e. tabbed behaviour)
     var initialisePage = function (event) {
-        change_page_back_history();
+        //change_page_back_history();
     };
 
     var onPageChange = function (event, data) {
@@ -121,7 +121,7 @@ Conference.controller = (function ($, dataContext, document) {
         $(databaseNotInitialisedMsg).appendTo(view);
     }
 
-    var change_page_back_history = function () {
+/*    var change_page_back_history = function () {
         $('a[data-role="tab"]').each(function () {
             var anchor = $(this);
             anchor.bind("click", function () {
@@ -133,17 +133,24 @@ Conference.controller = (function ($, dataContext, document) {
             });
         });
     };
+*/
 
     var deal_with_geolocation = function () {
-        var phoneGapApp = (document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1 );
-        if (navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/)) {
-            // Running on a mobile. Will have to add to this list for other mobiles.
-            // We need the above because the deviceready event is a phonegap event and
-            // if we have access to PhoneGap we want to wait until it is ready before
-            // initialising geolocation services
+        var phoneGapApp = (document.URL.indexOf('http://') === -1 && 
+                           document.URL.indexOf('https://') === -1 );
+        if (navigator.userAgent
+            .match(/(iPhone|iPod|iPad|Android|BlackBerry)/)) {
+            /* Running on a mobile. Will have to add to this list for other 
+             * mobiles. 
+             *
+             * We need the above because the deviceready event is a phonegap 
+             * event and if we have access to PhoneGap we want to wait until it
+             * is ready before initialising geolocation services.
+             */
             if (phoneGapApp) {
                 //alert('Running as PhoneGapp app');
-                document.addEventListener("deviceready", initiate_geolocation, false);
+                document.addEventListener("deviceready", initiate_geolocation, 
+                                          false);
             }
             else {
                 initiate_geolocation(); // Directly from the mobile browser
@@ -155,10 +162,11 @@ Conference.controller = (function ($, dataContext, document) {
     };
 
     var initiate_geolocation = function () {
-
-        // Do we have built-in support for geolocation (either native browser or phonegap)?
+        // Do we have built-in support for geolocation (either native browser 
+        // or phonegap)?
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(handle_geolocation_query, handle_errors);
+            navigator.geolocation.getCurrentPosition(handle_geolocation_query, 
+                                                     handle_errors);
         }
         else {
             // We don't so let's try a polyfill
@@ -167,23 +175,29 @@ Conference.controller = (function ($, dataContext, document) {
     };
 
     var handle_errors = function (error) {
+        var errorString = "";
         switch (error.code) {
-            case error.PERMISSION_DENIED:
-                alert("user did not share geolocation data");
+            case error.PERMISSION_DENIED: 
+                errorString = "This app doesn't have permission to access " +
+                              "your location."+
+                              "<br /><br />" +
+                              "<i>Please enable location services to access " +
+                              "this feature.</i>";
                 break;
-
             case error.POSITION_UNAVAILABLE:
-                alert("could not detect current position");
+                errorString = "This app currently can't access your location.";
                 break;
-
             case error.TIMEOUT:
-                alert("retrieving position timed out");
+                errorString = "This app currently can't access your location." +
+                              "<br/><br />" + 
+                              "<i>Please try again later</i>";
                 break;
-
             default:
-                alert("unknown error");
+                errorString += "Unknown error.";
                 break;
         }
+        $('#map-error-popup-text').empty().append(errorString);
+        $('#map-error-popup').popup().popup('open');
     };
 
     var normalize_yql_response = function (response) {
@@ -209,7 +223,8 @@ Conference.controller = (function ($, dataContext, document) {
     };
 
     var get_map_height = function () {
-        return $(window).height() - ($('#maptitle').height() + $('#mapfooter').height());
+        return $(window).height() - ($('#maptitle').height() + 
+                                     $('#mapfooter').height());
     }
 
     var get_map_width = function () {
@@ -222,10 +237,14 @@ Conference.controller = (function ($, dataContext, document) {
         var the_height = get_map_height();
         var the_width = get_map_width();
 
-        var image_url = "http://maps.google.com/maps/api/staticmap?sensor=false&center=" + position.coords.latitude + "," +
-            position.coords.longitude + "&zoom=14&size=" +
-            the_width + "x" + the_height + "&markers=color:blue|label:S|" +
-            position.coords.latitude + ',' + position.coords.longitude;
+        var image_url = "http://maps.google.com/maps/api/staticmap?" + 
+                        "sensor=false&center=" + 
+                        position.coords.latitude + "," +
+                        position.coords.longitude + "&zoom=14&size=" +
+                        the_width + "x" + the_height + 
+                        "&markers=color:blue|label:S|" +
+                        position.coords.latitude + ',' + 
+                        position.coords.longitude;
 
         $('#map-img').remove();
 
@@ -239,23 +258,23 @@ Conference.controller = (function ($, dataContext, document) {
     };
 
     var init = function () {
-        // The pagechange event is fired every time we switch pages or display a page
-        // for the first time.
+        // The pagechange event is fired every time we switch pages or display 
+        // a page for the first time.
         var d = $(document);
         var databaseInitialised = dataContext.init();
         if (!databaseInitialised) {
             d.bind("pagechange", noDataDisplay);
         }
         d.bind("pagechange", onPageChange);
-        // The pageinit event is fired when jQM loads a new page for the first time into the
-        // Document Object Model (DOM). When this happens we want the initialisePage function
-        // to be called.
+        // The pageinit event is fired when jQM loads a new page for the first 
+        // time into the Document Object Model (DOM). When this happens we want
+        // the initialisePage function to be called.
         d.bind("pageinit", initialisePage);
     };
 
 
-    // Provides a hash of functions that we return to external code so that they
-    // know which functions they can call. In this case just init.
+    // Provides a hash of functions that we return to external code so that 
+    // they  know which functions they can call. In this case just init.
     var pub = {
         init: init
     };
