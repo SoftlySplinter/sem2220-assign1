@@ -15,8 +15,8 @@ Conference.dataContext = (function ($) {
 
     var populateDB = function (tx) {
 
-        // There is much more here than we need for the assignment. We only need sessions and days
-        // but it allows for future expansion
+        // There is much more here than we need for the assignment. We only 
+        // need sessions and days but it allows for future expansion
         tx.executeSql('CREATE TABLE days (_id INTEGER PRIMARY KEY AUTOINCREMENT, day TEXT NOT NULL, date TEXT)', [], createSuccess, errorDB);
         tx.executeSql('CREATE TABLE talks (_id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL, speaker TEXT, image TEXT, description TEXT, notes TEXT, eventid INTEGER NOT NULL)', [], createSuccess, errorDB);
         tx.executeSql('CREATE TABLE venues (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, latitude TEXT, longitude TEXT)', [], createSuccess, errorDB);
@@ -182,7 +182,8 @@ Conference.dataContext = (function ($) {
     }
 
     var initialise_database = function () {
-        // We open any existing database with this name and from the same origin.
+        // We open any existing database with this name and from the same 
+        // origin.
         // Check first that openDatabase is supported.
         // Note that if not supported natively and we are running on a mobile
         // then PhoneGap will provide the support.
@@ -191,8 +192,8 @@ Conference.dataContext = (function ($) {
         }
         db = window.openDatabase(DATABASE_NAME, "", "Conference App", 200000);
 
-        // If the version is empty then we know it's the first create so set the version
-        // and populate
+        // If the version is empty then we know it's the first create so set 
+        // the version and populate
         if (db.version.length == 0) {
             db.changeVersion("", DATABASE_VERSION);
             db.transaction(populateDB, errorDB, successPopulate);
@@ -217,12 +218,13 @@ Conference.dataContext = (function ($) {
 
 
     var querySessions = function (tx) {
-        // For the moment we just deal with the first day
-        // SELECT * FROM sessions WHERE sessions.dayid = '1' ORDER BY sessions.starttime ASC
-
-        // **ENTER CODE HERE** TO EXECUTE SQL AND DEAL WITH ANY ERRORS
-        // ON SUCCESS YOU SHOULD CALL processorFunc PASSING THE LIST OF RESULT DATA
+        tx.executeSql("SELECT * FROM sessions WHERE sessions.dayid = '1' ORDER BY sessions.starttime ASC", 
+                      [], handleSelect, errorDB);
     }
+
+    var handleSelect = function(tx, result) {
+      processorFunc(result.rows);
+    };
 
     // Called by Controller.js onPageChange method
     var processSessionsList = function (processor) {
