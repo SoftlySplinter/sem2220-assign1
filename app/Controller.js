@@ -71,8 +71,10 @@ Conference.controller = (function ($, dataContext, document) {
           var arr = queryListToArray(sessionsList).map(getSessionHTML);
 
           // o Loop through all the session items to add them to the list.
-          arr.forEach( function(htmlString) {
-            $('<li>').append(htmlString).appendTo('#' + listview_id);
+          arr.forEach( function(html) {
+            var li = $('<li>');
+            html.appendTo(li);
+            li.appendTo('#' + listview_id);
           });
           // o You will need to refresh JQM by calling listview function
           $('#' + listview_id).listview().listview('refresh');
@@ -88,17 +90,29 @@ Conference.controller = (function ($, dataContext, document) {
     }
 
     var getSessionHTML = function(sessionObj) {
-      return "<a href=\"\">" +
-             "  <div class=\"session-list-item\">" + 
-             "    <h3>" + sessionObj.title + "</h3>" + 
-             "    <div>" +
-             "      <h6>" + sessionObj.type + "</h6>" +
-             "      <h6>" + 
-                      sessionObj.starttime + " - " + sessionObj.endtime + 
-             "      </h6>" +
-             "    </div>" +
-             "  </div>" +
-             "</a>";
+      // HTML Soup, but in a slightly nice way.
+      var a = $('<a>');
+      a.attr({'href':'""'});
+
+      var sessionListItem = $('<div>');
+      sessionListItem.attr({'class': 'session-list-item'});
+
+      var title = $('<h3>').append(sessionObj.title);
+      var details = $('<div>');
+
+      var type = $('<h6>').append(sessionObj.type);
+      var time = $('<h6>').append(sessionObj.starttime + ' - ' +
+                                  sessionObj.endtime);
+
+      type.appendTo(details);
+      time.appendTo(details);
+
+      title.appendTo(sessionListItem);
+      details.appendTo(sessionListItem);
+
+      sessionListItem.appendTo(a);
+
+      return a;
     }
 
     var noDataDisplay = function (event, data) {
