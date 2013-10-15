@@ -50,19 +50,56 @@ Conference.controller = (function ($, dataContext, document) {
         // based on the data you've received from DataContext.js (it
         // calls this method with the list of data)
         // Here are some things you need to do:
-        // o Obtain a reference to #sessions-list-content element
-        // o If the sessionsList is empty append a div with an error message to the page
-        // o Create the <ul> element using jQuery commands and append to the sessions section
-        // o Loop through the sessionsList data building up an appropriate set of <li>
-        // elements. See how we do this in the worksheet version that hard-codes the
-        // session data in index.html
-        // o Append the list items to the <ul> element created earlier. Hint: building
-        // up an array and then converting to a string with join before appending
-        // would help.
-        // o You will need to refresh JQM by calling listview function
-        // **ENTER CODE HERE**
 
+        // o Obtain a reference to #sessions-list-content element
+        var sessions = $('#sessions-list-content');
+
+        if(!sessions) {
+          console.log("No reference to #sessions-list-content");
+          return;
+        }
+
+        // o If the sessionsList is empty append a div with an error message to the page
+        if(sessionsList.length <= 0) {
+          sessions.append('<div>No Sessions Found.</div>');
+        } else {
+          // o Create the <ul> element using jQuery commands and append to the sessions section
+          var listview_id = 'session-listview';
+          $('<ul>').attr({'id': listview_id, 
+                          'data-role':'listview',
+                          'data-filter': 'true'}).appendTo(sessions);
+          var arr = queryListToArray(sessionsList).map(getSessionHTML);
+
+          // o Loop through all the session items to add them to the list.
+          arr.forEach( function(htmlString) {
+            $('<li>').append(htmlString).appendTo('#' + listview_id);
+          });
+          // o You will need to refresh JQM by calling listview function
+          $('#' + listview_id).listview().listview('refresh');
+        }
     };
+
+    var queryListToArray = function(queryList) {
+      var arr = [];
+      for(var i = 0; i < queryList.length; i++) {
+        arr[i] = queryList.item(i);
+      }
+      return arr;
+    }
+
+    var getSessionHTML = function(sessionObj) {
+      return "<a href=\"\">" +
+             "  <div class=\"session-list-item\">" + 
+             "    <h3>" + sessionObj.title + "</h3>" + 
+             "    <div>" +
+             "      <h6>" + sessionObj.type + "</h6>" +
+             "      <h6>" + 
+                      sessionObj.starttime + " - " + sessionObj.endtime + 
+             "      </h6>" +
+             "    </div>" +
+             "  </div>" +
+             "</a>";
+    }
 
     var noDataDisplay = function (event, data) {
         var view = $(sessionsListSelector);
