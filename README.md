@@ -5,7 +5,7 @@
 
 > Hand-out date: Tuesday 22nd October 2013
 
-> Hand-in date: Monday 4th November 2013
+> Hand-in date: Monday 11th November 2013
 
 > 20% of overall assessment
 
