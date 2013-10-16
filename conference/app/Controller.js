@@ -92,7 +92,7 @@ Conference.controller = (function ($, dataContext, document) {
     var getSessionHTML = function(sessionObj) {
       // HTML Soup, but in a slightly nice way.
       var a = $('<a>');
-      a.attr({'href':'""'});
+      a.attr({'href':'#session?id=' + sessionObj._id});
 
       var sessionListItem = $('<div>');
       sessionListItem.attr({'class': 'session-list-item'});
