@@ -5,6 +5,7 @@ Conference.dataContext = (function ($) {
 
     var db = null;
     var processorFunc = null;
+    var sessionId = null;
     var DATABASE_NAME = 'conference_db';
     // Use OLD_DATABASE_VERSION when upgrading databases. It indicates
     // the version we can upgrade from. Anything older and we tell the user
@@ -220,7 +221,12 @@ Conference.dataContext = (function ($) {
     var querySessions = function (tx) {
         tx.executeSql("SELECT * FROM sessions WHERE sessions.dayid = '1' ORDER BY sessions.starttime ASC", 
                       [], handleSelect, errorDB);
-    }
+    };
+
+    var querySession = function(tx) {
+        tx.executeSql("SELECT * FROM sessions WHERE sessions._id = '" +
+                      sessionId + "'", [], handleSelect, errorDB);
+    };
 
     var handleSelect = function(tx, result) {
       processorFunc(result.rows);
@@ -234,10 +240,19 @@ Conference.dataContext = (function ($) {
         }
     };
 
+    var processSession = function(processor, id) {
+        sessionId = id;
+        processorFunc = processor;
+        if(db) {
+            db.transaction(querySession, errorDB);
+        }
+    };
+
     // The methods we're publishing to other JS files
     var pub = {
         init:init,
-        processSessionsList:processSessionsList  // Called by Controller.js
+        processSessionsList:processSessionsList, // Called by Controller.js
+        processSession:processSession            // Called by Controller.js
     };
 
     return pub;

@@ -13,7 +13,10 @@ Conference.controller = (function ($, dataContext, document) {
 
     var TECHNICAL_SESSION = "Technical",
         SESSIONS_LIST_PAGE_ID = "sessions",
+        SESSION_PAGE_ID = "session",
         MAP_PAGE = "map";
+
+    var curSession = -1;
 
     // This changes the behaviour of the anchor <a> link
     // so that when we click an anchor link we change page without
@@ -21,12 +24,13 @@ Conference.controller = (function ($, dataContext, document) {
     // We also don't want the usual page transition effect but
     // rather to have no transition (i.e. tabbed behaviour)
     var initialisePage = function (event) {
-        //change_page_back_history();
+        change_page_back_history();
     };
 
     var onPageChange = function (event, data) {
         // Find the id of the page
         var toPageId = data.toPage.attr("id");
+        console.log(toPageId);
 
         // If we're about to display the map tab (page) then
         // if not already displayed then display, else if
@@ -36,6 +40,8 @@ Conference.controller = (function ($, dataContext, document) {
             case SESSIONS_LIST_PAGE_ID:
                 dataContext.processSessionsList(renderSessionsList);
                 break;
+            case SESSION_PAGE_ID:
+                dataContext.processSession(renderSession, curSession);
             case MAP_PAGE:
                 if (!mapDisplayed || (currentMapWidth != get_map_width() ||
                     currentMapHeight != get_map_height())) {
@@ -45,6 +51,11 @@ Conference.controller = (function ($, dataContext, document) {
         }
     };
 
+    var renderSession = function(sessionSql) {
+        var session = sessionSql.item(0);
+        console.log(session);
+    };
+
     var renderSessionsList = function (sessionsList) {
         // This is where you do the work to build the HTML ul list
         // based on the data you've received from DataContext.js (it
@@ -52,7 +63,7 @@ Conference.controller = (function ($, dataContext, document) {
         // Here are some things you need to do:
 
         // o Obtain a reference to #sessions-list-content element
-        var sessions = $('#sessions-list-content');
+        var sessions = $(sessionsListSelector);
 
         if(!sessions) {
           console.log("No reference to #sessions-list-content");
@@ -68,6 +79,7 @@ Conference.controller = (function ($, dataContext, document) {
           $('<ul>').attr({'id': listview_id, 
                           'data-role':'listview',
                           'data-filter': 'true'}).appendTo(sessions);
+          $('#' + listview_id).listview();
           var arr = queryListToArray(sessionsList).map(getSessionHTML);
 
           // o Loop through all the session items to add them to the list.
@@ -77,7 +89,7 @@ Conference.controller = (function ($, dataContext, document) {
             li.appendTo('#' + listview_id);
           });
           // o You will need to refresh JQM by calling listview function
-          $('#' + listview_id).listview().listview('refresh');
+          $('#' + listview_id).listview('refresh');
         }
     };
 
@@ -92,7 +104,10 @@ Conference.controller = (function ($, dataContext, document) {
     var getSessionHTML = function(sessionObj) {
       // HTML Soup, but in a slightly nice way.
       var a = $('<a>');
-      a.attr({'href':'#session?id=' + sessionObj._id});
+      a.attr({'href':"#session"});
+      a.click(function () {
+          curSession = sessionObj._id
+      });
 
       var sessionListItem = $('<div>');
       sessionListItem.attr({'class': 'session-list-item'});
@@ -121,19 +136,21 @@ Conference.controller = (function ($, dataContext, document) {
         $(databaseNotInitialisedMsg).appendTo(view);
     }
 
-/*    var change_page_back_history = function () {
+    var change_page_back_history = function () {
         $('a[data-role="tab"]').each(function () {
             var anchor = $(this);
             anchor.bind("click", function () {
-                $.mobile.changePage(anchor.attr("href"), { // Go to the URL
-                    transition: "none",
-                    changeHash: false
-                });
-                return false;
+                if(anchor.attr("href") !== undefined) { 
+                    $.mobile.changePage(anchor.attr("href"), { // Go to the URL
+                        transition: "none",
+                        changeHash: false
+                    });
+                    return false;
+                }
             });
         });
     };
-*/
+
 
     var deal_with_geolocation = function () {
         var phoneGapApp = (document.URL.indexOf('http://') === -1 && 
@@ -238,11 +255,11 @@ Conference.controller = (function ($, dataContext, document) {
         var the_width = get_map_width();
 
         var image_url = "http://maps.google.com/maps/api/staticmap?" + 
-                        "sensor=false&center=" + 
+                        "sensor=true&center=" + 
                         position.coords.latitude + "," +
                         position.coords.longitude + "&zoom=14&size=" +
-                        the_width + "x" + the_height + 
-                        "&markers=color:blue|label:S|" +
+                        the_width + "x" + the_height +
+                        "&markers=color:blue|" +
                         position.coords.latitude + ',' + 
                         position.coords.longitude;
 

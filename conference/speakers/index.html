@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>Web Conference App</title>
+  <!-- See http://code.google.com/p/html5shiv/ 
+       HTML5shiv is a library to enable all new HTML5 elements and sectioning 
+       in IE 8 and earlier -->
+  <!--[if lt IE 9]>
+  <script src="html5shiv.js" type="text/javascript" ></script>
+  <![endif]-->
+  <link href="lib/jqm/jquery.mobile-1.2.0.css" rel="stylesheet" 
+        type="text/css"/>
+  
+  <!-- Include basic structural CSS first, that is mobile focused -->
+  <link rel="stylesheet" type="text/css" 
+        href="/css/conference-mobile-first.css"/>
+  <link rel="stylesheet" type="text/css" 
+        href="/css/conference-mid-size-screens.css"
+        media="all and (min-width: 527px) and (max-width: 684px)"/>
+  <link rel="stylesheet" type="text/css" 
+        href="/css/conference-large-screens.css"
+        media="all and (min-width: 685px)"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+  <!-- Deal with IE 8 and earlier, which don't support media queries. 
+       Unfortunately, there is nothing in these IE conditionals that allow us 
+       to also test for browser window size so we just bring in support for 
+       large screens. We could get round this with some Javascript, BUT the JS 
+       could be turned off too. -->
+  <!--[if (lt IE 9)&(!IEMobile)]>
+  <link rel="stylesheet" type="text/css" 
+        href="css/conference-large-screens.css" 
+        media="all"/>
+  <![endif]-->
+  
+  <script src="/lib/jq/jquery-1.8.2.js" type="text/javascript"></script>
+  <script src="/phonegap.js" type="text/javascript"></script>
+  <script src="/lib/yqlgeo/yqlgeo.js"></script>
+  <script src="/app/DataContext.js" type="text/javascript"></script>
+  <script src="/app/Controller.js" type="text/javascript" ></script>
+  <script src="/lib/jqm/jquery.mobile-1.2.0.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+<article id="talks_page" role="document" aria-live="assertive" 
+         aria-atomic="true" 
+         data-role="page">
+
+  <header class="page_header" role="banner" data-role="header" data-theme="b" 
+          data-position="fixed">
+    <div class="logo">
+      <img src="logo.jpg" alt="The conference home page logo"/>
+    </div>
+
+    <div>
+      <h1>The Future of the Web Conference</h1>
+    </div>
+
+    <nav data-role="navbar">
+      <ul >
+        <li><a href="/">Latest Posts</a></li>
+        <li><a href="talks">Talks</a></li>
+        <li><a href="speakers">Speakers</a></li>
+        <li><a href="contact">Contact Us</a></li>
+      </ul>
+    </nav>
+
+  </header>
+  
+  <section data-role="content" id="speakers-list-content" class="indexPos">
+  </section>
+  
+  <footer id="mapfooter" data-role="footer" data-position="fixed">
+  </footer>
+  
+</article>
+
+</body>
+</html>

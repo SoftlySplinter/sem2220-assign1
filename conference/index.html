@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title>Web Conference App</title>
+  <title>Web Conference</title>
   <!-- See http://code.google.com/p/html5shiv/ 
        HTML5shiv is a library to enable all new HTML5 elements and sectioning 
        in IE 8 and earlier -->
@@ -45,8 +45,7 @@
 <body>
 
 <article id="home_page" role="document" aria-live="assertive" 
-         aria-atomic="true" 
-         data-role="page">
+         aria-atomic="true" data-role="page" data-title="Web Conference">
 
   <header class="page_header" role="banner" data-role="header" data-theme="b" 
           data-position="fixed">
@@ -153,7 +152,7 @@
 </article>
 
 <article id="sessions" role="document" aria-live="assertive" aria-atomic="true"
-         data-role="page" data-title="Sessions">
+         data-role="page" data-title="Web Conference - Sessions">
   <header class="page_header" role="banner" data-role="header" data-theme="b" 
           data-position="fixed">
     <div class="logo">
@@ -196,8 +195,50 @@
   
 </article>
 
+<article id="session">
+   <header id="maptitle" class="page_header" role="banner" data-role="header" 
+           data-theme="b" data-position="fixed">
+    <header class="logo">
+      <img src="logo.jpg" alt="The conference home page logo"/>
+    </header>
+
+    <div>
+      <h1>The Future of the Web Conference</h1>
+    </div>
+
+    <nav data-role="navbar">
+      <ul >
+        <li><a href="/">Latest Posts</a></li>
+        <li><a href="talks">Talks</a></li>
+        <li><a href="speakers">Speakers</a></li>
+        <li><a href="contact">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+ 
+  <section data-role="content" id="session-content" class="indexPos">
+  </section>
+
+
+  <footer data-role="footer" data-position="fixed">
+    <nav data-role="navbar">
+      <ul>
+        <li>
+          <a data-icon="house" href="#home_page" data-role="tab">Home</a>
+        </li>
+        <li>
+          <a class="ui-btn-active ui-state-persist" data-role="tab" 
+             data-icon="sessions">Sessions</a>
+        </li>
+        <li>
+          <a href="#map" data-role="tab" data-icon="map">Map</a>
+        </li>
+      </ul>
+    </nav>
+</article>
+
 <article id="map" role="document" aria-live="assertive" aria-atomic="true" 
-         data-role="page">
+         data-role="page" data-title="Web Conference - Map">
    <header id="maptitle" class="page_header" role="banner" data-role="header" 
            data-theme="b" data-position="fixed">
     <header class="logo">
