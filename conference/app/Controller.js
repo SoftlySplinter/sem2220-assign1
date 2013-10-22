@@ -30,7 +30,6 @@ Conference.controller = (function ($, dataContext, document) {
     var onPageChange = function (event, data) {
         // Find the id of the page
         var toPageId = data.toPage.attr("id");
-        console.log(toPageId);
 
         // If we're about to display the map tab (page) then
         // if not already displayed then display, else if
@@ -51,19 +50,23 @@ Conference.controller = (function ($, dataContext, document) {
         }
     };
 
-    var renderSession = function(sessionSql) {
-        var session = sessionSql.item(0);
-        console.log(session);
+    var renderSession = function(sqlResult) {
+        var session = $("#session-content");
+        session.empty();
+        if(sqlResult.length <= 0) {
+            session.append("<div>No Events for this session</div>");
+        } else {
+            var list = toListView("events-listview", 
+                                  queryListToArray(sqlResult).map(getEventHTML));
+            list.appendTo(session);
+            list.listview().listview('refresh');
+        }
     };
 
     var renderSessionsList = function (sessionsList) {
-        // This is where you do the work to build the HTML ul list
-        // based on the data you've received from DataContext.js (it
-        // calls this method with the list of data)
-        // Here are some things you need to do:
-
         // o Obtain a reference to #sessions-list-content element
         var sessions = $(sessionsListSelector);
+        sessions.empty();
 
         if(!sessions) {
           console.log("No reference to #sessions-list-content");
@@ -74,24 +77,29 @@ Conference.controller = (function ($, dataContext, document) {
         if(sessionsList.length <= 0) {
           sessions.append('<div>No Sessions Found.</div>');
         } else {
-          // o Create the <ul> element using jQuery commands and append to the sessions section
-          var listview_id = 'session-listview';
-          $('<ul>').attr({'id': listview_id, 
-                          'data-role':'listview',
-                          'data-filter': 'true'}).appendTo(sessions);
-          $('#' + listview_id).listview();
-          var arr = queryListToArray(sessionsList).map(getSessionHTML);
-
-          // o Loop through all the session items to add them to the list.
-          arr.forEach( function(html) {
-            var li = $('<li>');
-            html.appendTo(li);
-            li.appendTo('#' + listview_id);
-          });
+          var list = toListView("session-listview",
+                                queryListToArray(sessionsList).map(getSessionHTML));
           // o You will need to refresh JQM by calling listview function
-          $('#' + listview_id).listview('refresh');
+          list.appendTo(sessions);
+          list.listview();
+          list.listview('refresh');
         }
     };
+
+    var toListView = function(id, items) {
+          // o Create the <ul> element using jQuery commands and append to the sessions section
+          var listviewElems = $('<ul>');
+          listviewElems.attr({'id': id, 
+                          'data-role':'listview',
+                          'data-filter': 'true'});
+          // o Loop through all the session items to add them to the list.
+          items.forEach( function(html) {
+            var li = $('<li>');
+            html.appendTo(li);
+            li.appendTo(listviewElems);
+          });
+          return listviewElems;
+    }
 
     var queryListToArray = function(queryList) {
       var arr = [];
@@ -130,6 +138,29 @@ Conference.controller = (function ($, dataContext, document) {
       return a;
     }
 
+    var getEventHTML = function(eventObj) {
+      // HTML Soup, but in a slightly nice way.
+      var a = $('<a>');
+      a.attr({'href':"#event"});
+
+      var sessionListItem = $('<div>');
+      sessionListItem.attr({'class': 'event-list-item'});
+
+      var title = $('<h3>').append(eventObj.title);
+      var details = $('<div>');
+
+      var session = $('<h6>').append(eventObj.session);
+      var type = $('<h6>').append(eventObj.venue);
+      session.appendTo(details);
+      type.appendTo(details);
+
+      details.appendTo(sessionListItem);
+      title.appendTo(sessionListItem);
+
+      sessionListItem.appendTo(a);
+
+      return a;
+    }
     var noDataDisplay = function (event, data) {
         var view = $(sessionsListSelector);
         view.empty();
@@ -251,14 +282,15 @@ Conference.controller = (function ($, dataContext, document) {
     var handle_geolocation_query = function (pos) {
         position = pos;
 
-        var the_height = get_map_height();
+        var the_height = Math.round(get_map_height());
         var the_width = get_map_width();
 
         var image_url = "http://maps.google.com/maps/api/staticmap?" + 
-                        "sensor=true&center=" + 
-                        position.coords.latitude + "," +
-                        position.coords.longitude + "&zoom=14&size=" +
-                        the_width + "x" + the_height +
+                        "sensor=true" +
+                        "&center=" + position.coords.latitude + "," +
+                        position.coords.longitude + 
+                        "&zoom=14" +
+                        "&size=" + the_width + "x" + the_height +
                         "&markers=color:blue|" +
                         position.coords.latitude + ',' + 
                         position.coords.longitude;

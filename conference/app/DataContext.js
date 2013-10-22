@@ -178,8 +178,9 @@ Conference.dataContext = (function ($) {
 
     }
 
-    var errorDB = function (err) {
-        console.log("Error processing SQL: " + err.code);
+    var errorDB = function (tx, err) {
+        console.log("Error processing SQL: " + 
+                    err.message + "(" + err.code + ")");
     }
 
     var initialise_database = function () {
@@ -219,13 +220,20 @@ Conference.dataContext = (function ($) {
 
 
     var querySessions = function (tx) {
-        tx.executeSql("SELECT * FROM sessions WHERE sessions.dayid = '1' ORDER BY sessions.starttime ASC", 
-                      [], handleSelect, errorDB);
+        tx.executeSql("SELECT * FROM sessions WHERE sessions.dayid = ? " +
+                      "ORDER BY sessions.starttime ASC", 
+                      [1], handleSelect, errorDB);
     };
 
     var querySession = function(tx) {
-        tx.executeSql("SELECT * FROM sessions WHERE sessions._id = '" +
-                      sessionId + "'", [], handleSelect, errorDB);
+        tx.executeSql("SELECT events.title AS title, venues.name AS venue, " +
+                      "sessions.title AS session " +
+                      "FROM events, sessions, venues " +
+                      "WHERE sessions._id = ? " +
+                      "AND events.sessionid = sessions._id " +
+                      "AND venues._id = events.venueid " +
+                      "ORDER BY events.venueid ASC",
+                      [sessionId], handleSelect, errorDB);
     };
 
     var handleSelect = function(tx, result) {

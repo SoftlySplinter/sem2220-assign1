@@ -196,8 +196,8 @@
 </article>
 
 <article id="session">
-   <header id="maptitle" class="page_header" role="banner" data-role="header" 
-           data-theme="b" data-position="fixed">
+   <header id="sessiontitle" class="page_header" role="banner" 
+           data-role="header" data-theme="b" data-position="fixed">
     <header class="logo">
       <img src="logo.jpg" alt="The conference home page logo"/>
     </header>
@@ -227,8 +227,7 @@
           <a data-icon="house" href="#home_page" data-role="tab">Home</a>
         </li>
         <li>
-          <a class="ui-btn-active ui-state-persist" data-role="tab" 
-             data-icon="sessions">Sessions</a>
+          <a href="#sessions" data-role="tab" data-icon="sessions">Sessions</a>
         </li>
         <li>
           <a href="#map" data-role="tab" data-icon="map">Map</a>
@@ -260,11 +259,6 @@
   </header>
   
   <section id="mapPos" role="application" data-role="content">
-    <div id="map-error-popup" data-rel="popup" data-overlay-theme="a">
-      <h3>Error Loading Map</h3>
-      <p id="map-error-popup-text"></p>
-    </div>
-    <!-- Content is dynamically added -->
   </section>
   
   <footer id="mapfooter" data-role="footer" data-position="fixed">
@@ -283,8 +277,39 @@
       </ul>
     </nav>
   </footer>
-  
 </article>
+
+<article id="talks">
+   <header id="talkstitle" class="page_header" role="banner" 
+           data-role="header" data-theme="b" data-position="fixed">
+    <header class="logo">
+      <img src="logo.jpg" alt="The conference home page logo"/>
+    </header>
+
+    <div>
+      <h1>The Future of the Web Conference</h1>
+    </div>
+
+    <nav data-role="navbar">
+      <ul >
+        <li><a href="/">Latest Posts</a></li>
+        <li><a href="#talks">Talks</a></li>
+        <li><a href="#speakers">Speakers</a></li>
+        <li><a href="#contact">Contact Us</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section data-role="content" id="talks-content" class="indexPos">
+  </section>
+</article>
+ 
+<!-- Error Pop-up for map -->
+<div id="map-error-popup" data-rel="popup" data-overlay-theme="a">
+  <h3>Error Loading Map</h3>
+  <p id="map-error-popup-text"></p>
+</div>
+    <!-- Content is dynamically added -->
 
 </body>
 </html>
