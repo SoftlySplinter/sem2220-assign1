@@ -5,7 +5,8 @@ Conference.dataContext = (function ($) {
 
     var db = null;
     var processorFunc = null;
-    var sessionId = null;
+    var sessionId = -1;
+    var eventId = -1
     var DATABASE_NAME = 'conference_db';
     // Use OLD_DATABASE_VERSION when upgrading databases. It indicates
     // the version we can upgrade from. Anything older and we tell the user
@@ -220,21 +221,40 @@ Conference.dataContext = (function ($) {
 
 
     var querySessions = function (tx) {
-        tx.executeSql("SELECT * FROM sessions WHERE sessions.dayid = ? " +
-                      "ORDER BY sessions.starttime ASC", 
-                      [1], handleSelect, errorDB);
+        var sql = "SELECT sessions.*, days.day " + 
+                  "FROM sessions, days " + 
+                  "WHERE sessions.dayid = days._id " + 
+                  "ORDER BY sessions.dayid AND sessions.starttime ASC";
+        tx.executeSql(sql, [], handleSelect, errorDB);
     };
 
     var querySession = function(tx) {
-        tx.executeSql("SELECT events.title AS title, venues.name AS venue, " +
-                      "sessions.title AS session " +
-                      "FROM events, sessions, venues " +
-                      "WHERE sessions._id = ? " +
-                      "AND events.sessionid = sessions._id " +
-                      "AND venues._id = events.venueid " +
-                      "ORDER BY events.venueid ASC",
-                      [sessionId], handleSelect, errorDB);
+        var params = []
+        var sql = "SELECT events.*, venues.name AS venue, sessions.title AS session " +
+                  "FROM events, sessions, venues " +
+                  "WHERE events.sessionid = events._id " +
+                  "AND venues._id = events.venueid ";
+        if(sessionId != -1) {
+            sql += "AND sessions._id = ? ";
+            params = [sessionId];
+        }
+        sql += "ORDER BY events.venueid ASC";
+        tx.executeSql(sql, params, handleSelect, errorDB);
+        sessionId = -1;
     };
+
+    var queryTalks = function(tx) {
+        var params = []
+        var sql = "SELECT talks.*, events.title AS event " +
+                  "FROM talks, events " + 
+                  "WHERE talks.eventid = events._id ";
+        if(eventId != -1) {
+            sql += "AND talks.eventid = ? ";
+            params = [eventId];
+        }
+        tx.executeSql(sql, params, handleSelect, errorDB);
+        eventId = -1;
+    }
 
     var handleSelect = function(tx, result) {
       processorFunc(result.rows);
@@ -256,11 +276,20 @@ Conference.dataContext = (function ($) {
         }
     };
 
+    var processTalksList = function(processor, id) {
+        eventId = id;
+        processorFunc = processor;
+        if(db) {
+            db.transaction(queryTalks, errorDB);
+        }
+    }
+
     // The methods we're publishing to other JS files
     var pub = {
         init:init,
         processSessionsList:processSessionsList, // Called by Controller.js
-        processSession:processSession            // Called by Controller.js
+        processSession:processSession,           // Called by Controller.js
+        processTalksList:processTalksList,       // Called by Controller.js
     };
 
     return pub;

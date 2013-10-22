@@ -14,9 +14,11 @@ Conference.controller = (function ($, dataContext, document) {
     var TECHNICAL_SESSION = "Technical",
         SESSIONS_LIST_PAGE_ID = "sessions",
         SESSION_PAGE_ID = "session",
+        TALKS_PAGE_ID = "talks",
         MAP_PAGE = "map";
 
     var curSession = -1;
+    var curEvent = -1;
 
     // This changes the behaviour of the anchor <a> link
     // so that when we click an anchor link we change page without
@@ -41,6 +43,10 @@ Conference.controller = (function ($, dataContext, document) {
                 break;
             case SESSION_PAGE_ID:
                 dataContext.processSession(renderSession, curSession);
+                break;
+            case TALKS_PAGE_ID:
+                dataContext.processTalksList(renderTalksList, curEvent);
+                break;
             case MAP_PAGE:
                 if (!mapDisplayed || (currentMapWidth != get_map_width() ||
                     currentMapHeight != get_map_height())) {
@@ -48,6 +54,10 @@ Conference.controller = (function ($, dataContext, document) {
                 }
                 break;
         }
+
+        // Reset things
+        curSession = -1;
+        curEvent = -1;
     };
 
     var renderSession = function(sqlResult) {
@@ -56,10 +66,9 @@ Conference.controller = (function ($, dataContext, document) {
         if(sqlResult.length <= 0) {
             session.append("<div>No Events for this session</div>");
         } else {
-            var list = toListView("events-listview", 
-                                  queryListToArray(sqlResult).map(getEventHTML));
-            list.appendTo(session);
-            list.listview().listview('refresh');
+            toListView("events-listview", 
+                       queryListToArray(sqlResult).map(getEventHTML),
+                       session);
         }
     };
 
@@ -68,37 +77,38 @@ Conference.controller = (function ($, dataContext, document) {
         var sessions = $(sessionsListSelector);
         sessions.empty();
 
-        if(!sessions) {
-          console.log("No reference to #sessions-list-content");
-          return;
-        }
-
         // o If the sessionsList is empty append a div with an error message to the page
         if(sessionsList.length <= 0) {
           sessions.append('<div>No Sessions Found.</div>');
         } else {
-          var list = toListView("session-listview",
-                                queryListToArray(sessionsList).map(getSessionHTML));
-          // o You will need to refresh JQM by calling listview function
-          list.appendTo(sessions);
-          list.listview();
-          list.listview('refresh');
+          toListView("session-listview",
+                     queryListToArray(sessionsList).map(getSessionHTML),
+                     sessions);
         }
     };
 
-    var toListView = function(id, items) {
+    var renderTalksList = function(talksList) {
+        console.log(talksList);
+    }
+
+    var toListView = function(id, items, toplevel) {
           // o Create the <ul> element using jQuery commands and append to the sessions section
           var listviewElems = $('<ul>');
           listviewElems.attr({'id': id, 
                           'data-role':'listview',
                           'data-filter': 'true'});
+          listviewElems.appendTo(toplevel);
+          listviewElems.listview();
+
           // o Loop through all the session items to add them to the list.
           items.forEach( function(html) {
             var li = $('<li>');
             html.appendTo(li);
             li.appendTo(listviewElems);
           });
-          return listviewElems;
+
+          // o You will need to refresh JQM by calling listview function
+          listviewElems.listview('refresh');
     }
 
     var queryListToArray = function(queryList) {
@@ -109,23 +119,20 @@ Conference.controller = (function ($, dataContext, document) {
       return arr;
     }
 
-    var getSessionHTML = function(sessionObj) {
+    var getHTML = function(href, cls, clickCallback, title, subtitle, detail) {
       // HTML Soup, but in a slightly nice way.
       var a = $('<a>');
-      a.attr({'href':"#session"});
-      a.click(function () {
-          curSession = sessionObj._id
-      });
+      a.attr({'href': href});
+      a.click(clickCallback);
 
       var sessionListItem = $('<div>');
-      sessionListItem.attr({'class': 'session-list-item'});
+      sessionListItem.attr({'class': cls});
 
-      var title = $('<h3>').append(sessionObj.title);
+      var title = $('<h3>').append(title);
       var details = $('<div>');
 
-      var type = $('<h6>').append(sessionObj.type);
-      var time = $('<h6>').append(sessionObj.starttime + ' - ' +
-                                  sessionObj.endtime);
+      var type = $('<h6>').append(subtitle);
+      var time = $('<h6>').append(detail);
 
       type.appendTo(details);
       time.appendTo(details);
@@ -138,29 +145,30 @@ Conference.controller = (function ($, dataContext, document) {
       return a;
     }
 
-    var getEventHTML = function(eventObj) {
-      // HTML Soup, but in a slightly nice way.
-      var a = $('<a>');
-      a.attr({'href':"#event"});
-
-      var sessionListItem = $('<div>');
-      sessionListItem.attr({'class': 'event-list-item'});
-
-      var title = $('<h3>').append(eventObj.title);
-      var details = $('<div>');
-
-      var session = $('<h6>').append(eventObj.session);
-      var type = $('<h6>').append(eventObj.venue);
-      session.appendTo(details);
-      type.appendTo(details);
-
-      details.appendTo(sessionListItem);
-      title.appendTo(sessionListItem);
-
-      sessionListItem.appendTo(a);
-
-      return a;
+    var getSessionHTML = function(sessionObj) {
+      var timestring = sessionObj.day + ", " +
+                       sessionObj.starttime + " - " + sessionObj.endtime;
+      return getHTML('#session', 
+                     'session-list-item', 
+                     function() {
+                         curSession = sessionObj._id; 
+                     }, 
+                     sessionObj.title, 
+                     sessionObj.type, 
+                     timestring);
     }
+
+    var getEventHTML = function(eventObj) {
+        return getHTML('#talks',
+                       'session-list-item',
+                       function() {
+                           curEvent = eventObj._id;
+                       },
+                       eventObj.title,
+                       eventObj.session,
+                       eventObj.venue);
+    }
+
     var noDataDisplay = function (event, data) {
         var view = $(sessionsListSelector);
         view.empty();
