@@ -160,19 +160,19 @@ List formatting
     width: 30%;
 }
 
-/*
-Tab icons
-*/
+.talk-list-item h3 {
+    float: left;
+    margin-top: 1.25em;
+    font-size: 0.8em;
+    width: 65%;
+    margin-right: 5%;
+}
 
-.ui-icon-house  { background-image:  url(icons/home.png); }
-.ui-icon-sessions  { background-image:  url(icons/sessions.png); }
-.ui-icon-map  { background-image:  url(icons/map.png); }
-
-.event-list-item h6 {
+.talk-list-item h6 {
     font-size: 0.65em;
 }
 
-.event-list-item div {
+.talk-list-item div {
     float: right;
     width: 30%;
 }
