@@ -15,6 +15,22 @@
 \definecolor{mygray}{rgb}{0.5,0.5,0.5}
 \definecolor{mymauve}{rgb}{0.58,0,0.82}
 
+\lstdefinelanguage{JavaScript}{
+  keywords={typeof, new, true, false, catch, function, return, null, catch,
+switch, var, if, in, while, do, else, case, break},
+  keywordstyle=\color{blue}\bfseries,
+  ndkeywords={class, export, boolean, throw, implements, import, this},
+  ndkeywordstyle=\color{darkgray}\bfseries,
+  identifierstyle=\color{black},
+  sensitive=false,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+%  commentstyle=\color{purple}\ttfamily,
+%  stringstyle=\color{red}\ttfamily,
+  morestring=[b]',
+  morestring=[b]"
+}
+
 \lstset{ %
   backgroundcolor=\color{white},
   basicstyle=\footnotesize,
@@ -35,8 +51,6 @@
   tabsize=2,
 }
 
-\hyphenation{GENITOR}
-
 \newcommand*{\titleGM}{\begingroup
 \hbox{ 
 \hspace*{0.2\textwidth} 
@@ -44,9 +58,8 @@
 \hspace*{0.05\textwidth} 
 \parbox[b]{0.75\textwidth}{ 
 
-{\noindent\Huge\bfseries Solving Travelling Salesman Problems using Genetic
- Algorithms}\\[2\baselineskip] % Title
-{\large \textit{SEM6120 - Assignment 2}}\\[4\baselineskip] % Tagline or further description
+{\noindent\Huge\bfseries Mobile Web}\\[2\baselineskip] % Title
+{\large \textit{SEM2220 - Assignment 1}}\\[4\baselineskip] % Tagline or further description
 {\Large \textsc{Alexander D Brown (adb9)}} % Author name
 
 \vspace{0.5\textheight} 
@@ -54,7 +67,7 @@
 \endgroup}
 
 
-\title{Genetic Algorithms}
+\title{Mobile Web}
 \author{Alexander D Brown (adb9)}
 
 \begin{document}
@@ -63,5 +76,114 @@
 \newpage
 
 \section{Introduction}
+This report shows the process undertaken to change the Conference Web
+Application (produced by Chris Loftus) from a statically generated list to one
+loaded dynamically using JavaScript from a WebSQL database. %TODO citation
+
+The Conference Web Application is a website which was designed using
+progressive enhancement to provide content to mobile devices as well as desktop
+browsers. It uses the jQueryMobile framework to give a native feel for mobile
+users. 
+
+The process involved the implementation of some JavaScript code to query the
+WebSQL database created in HTML5 storage when the Conference Web Application is
+initially loaded. The results of this query are then dynamically rendered in
+the sessions page as a part of a jQueryMobile list view.
+
+
+
+\section{Implementation}
+This section describes the process taken to implement the dynamic loading of
+sessions into the session view from the pre-existing WebSQL database. There
+were two main steps to do this:
+
+\begin{enumerate}
+\item Query the database using standard SQL statements.
+\item Render the results of the query.
+\end{enumerate}
+
+Because a lot of the code was already written this was a simple case of
+implementing two methods. The method to query the database handled the building
+of SQL to perform the query and use a callback method to handle the results of
+this query. This callback method also needed implemented and read the each of
+the results and appended them to a jQueryMobile list view object using jQuery
+methods.
+
+\subsection{Implementing the Database Query}
+The \texttt{DataContext.js} file handles the data handling for the application,
+on the first load of the whole site the database is built from hard-coded
+values in the file. It is also responsible for performing database queries and
+transactions and therefore is the location which the sessions query is
+required.
+
+To start with a simple SQL statement was designed, based on the hints from the
+original author which would select everything from the sessions table where the
+session was on the first day of the conference.
+
+\begin{lstlisting}[language=sql]
+SELECT * FROM sessions WHERE sessions.day_id = '1'
+                       ORDER BY sessions.starttime ASC
+\end{lstlisting}
+
+From this it is a simple matter of calling a method from the transaction method
+as shown:
+
+\begin{lstlisting}[language=javascript]
+var querySessions = function(tx) {
+  var sql = // SQL Statement
+  tx.execute_sql(sql, [], callback, error_callback);
+};
+\end{lstlisting}
+
+Where the callback is the rendering function.
+
+To make this statement a little more secure, as recommended by the API, it was
+changed to be:
+
+\begin{lstlisting}[language=javascript]
+var querySessions = function(tx) {
+  var sql = "SELECT * FROM sessions WHERE session.day_id = ? 
+             ORDER BY sessions.starttime ASC";
+  tx.execute_sql(sql, [1], callback, error_callback);
+};
+\end{lstlisting}
+
+Though the query is completely isolated from user input, it may not be in the
+future.
+
+To enhance this further, joining the days table to include the name of the day
+that the session was on. This could have been hard coded in the rendering
+function, but again it may not remain limited to the first day so doing this
+dynamically will be a benefit in the future.
+
+\begin{lstlisting}[language=javascript]
+var querySessions = function(tx) {
+  var sql = "SELECT sessions.* days.day FROM sessions, days 
+             WHERE sessions.day_id = ? 
+             AND days._id = sessions.day_id 
+             ORDER BY sessions.dayid 
+             AND sessions.starttime ASC";
+  tx.execute_sql(sql, [1], callback, error_callback);
+};
+\end{lstlisting}
+
+\subsection{Problems Encountered}
+% TODO Probably WebSQL standards.
+
+\section{Preview}
+% TODO Screenshots
+
+\section{Testing and Debugging}
+% TODO Screenshots of the developer view and how testing occured
+
+\subsection{Debugging Using the Developer View in Chromium}
+
+
+\subsection{Testing on Android Emulator}
+
+
+\section{Evaluation}
+
+
 
 \end{document}
