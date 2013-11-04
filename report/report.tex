@@ -220,9 +220,85 @@ some form of correct result was gained.
 
 \section{Testing and Debugging}
 % TODO Screenshots of the developer view, winre and emulator testing.
+The Chrome developer tools were used to debug the conference web application,
+an in-browser implementation using Web Inspector.%TODO \cite
+There are several similar tools which also use Web Inspector, including wienre,
+a locally run webserver which acts very similarly to the developer tools. The
+Apple Web Inspector is another similar product.
 
+The Chrome developer tools were the easiest solution as they are native to the
+Google family of browsers and provide support without the need for setting up
+additional tools.
+
+The Opera mobile browser was used to test the mobile version of the web
+application to ensure it viewed correctly on mobile devices. 
+The Android emulator was used to test the hybrid application functioned
+correctly as a native Android application.
+
+Figure~\ref{fig:dev-tools} shows the use of the Chrome developer tools to debug
+the conference web application. These tools have the ability to inspect
+different elements to check their styling information, which is useful to check
+existing styles are being correctly applied as well as apply new styles on the
+fly.
+
+The resources tool provides functionality to visually inspect a Web SQL
+database, this is a useful feature to test that all relevant items are
+correctly loaded into list views as well as being able to check to state of the
+database and the connections to other tables. This was especially useful when
+different databases were joined to provide additional information.
+
+The developer tools also include a basic JavaScript console which picks up any
+\texttt{console.log} statements inside the code. This made building and
+debugging the application a lot easier when the Web SQL database API didn't
+provide the needed information to access objects from the database. Instead
+these objects could be logged and inspected using this view.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{0.4\textwidth}
+\includegraphics[width=\textwidth]{img/dev-tools-styles}
+\caption{Inspecting Element Styles using the Chrome Developer Tools.}
+\end{subfigure}
+~
+\begin{subfigure}[b]{0.4\textwidth}
+\includegraphics[width=\textwidth]{img/dev-tools}
+\caption{Using the Chrome Developer Tools to inspect the database.}
+\end{subfigure}
+\caption{Using the Chrome Developer Tools for debugging.}
+\label{fig:dev-tools}
+\end{figure}
+
+Figure~\ref{fig:testing} shows the tools and process used to test the
+application in its different formats. The Opera Mobile Emulator provides a
+mobile-sized browsers which acts like the Opera Browser package on a mobile
+device. This allows the testing of styling and mobile experience as well as
+making sure the APIs used are compatible with mobile devices.
+
+The hybrid application was created using PhoneGap and tested on the Android
+Emulator. The main bulk of the testing done through this was to ensure the API
+worked as part of a native application and not just a web application.
+
+\begin{figure}[h]
+\centering
+\begin{subfigure}[b]{0.4\textwidth}
+\centering
+\includegraphics[height=225px]{img/opera-mobile-lists}
+\caption{Conference Web Application running as a Website App on the Opera 
+         Mobile Emulator}
+\end{subfigure}
+~
+\begin{subfigure}[b]{0.4\textwidth}
+\includegraphics[width=\textwidth]{img/android-lists}
+\caption{Conference Web Application running as a Hybrid App on the Android
+         Emulator.}
+\end{subfigure}
+\caption{Testing the Conference Web Application Sessions list on different
+         mobile emulators.}
+\label{fig:testing}
+\end{figure}
 
 \section{Evaluation}
+%TODO
 
 
 \newpage
