@@ -78,23 +78,24 @@ switch, var, if, in, while, do, else, case, break},
 \section{Introduction}
 This report shows the process undertaken to change the Conference Web
 Application (produced by Chris Loftus) from a statically generated list to one
-loaded dynamically using JavaScript from a WebSQL database. %TODO citation
+loaded dynamically using JavaScript from a Web SQL
+database\cite{WebSQL2010Hickson}.
 
 The Conference Web Application is a website which was designed using
 progressive enhancement to provide content to mobile devices as well as desktop
-browsers. It uses the jQueryMobile framework to give a native feel for mobile
-users. 
+browsers. It uses the jQuery Mobile framework\cite{jQueryMobile} to give a 
+native feel for mobile users. 
 
 The process involved the implementation of some JavaScript code to query the
-WebSQL database created in HTML5 storage when the Conference Web Application is
+Web SQL database created in HTML 5 storage when the Conference Web Application is
 initially loaded. The results of this query are then dynamically rendered in
-the sessions page as a part of a jQueryMobile list view.
+the sessions page as a part of a jQuery Mobile list view.
 
 
 
 \section{Implementation}
 This section describes the process taken to implement the dynamic loading of
-sessions into the session view from the pre-existing WebSQL database. There
+sessions into the session view from the pre-existing Web SQL database. There
 were two main steps to do this:
 
 \begin{enumerate}
@@ -106,7 +107,7 @@ Because a lot of the code was already written this was a simple case of
 implementing two methods. The method to query the database handled the building
 of SQL to perform the query and use a callback method to handle the results of
 this query. This callback method also needed implemented and read the each of
-the results and appended them to a jQueryMobile list view object using jQuery
+the results and appended them to a jQuery Mobile list view object using jQuery
 methods.
 
 \subsection{Implementing the Database Query}
@@ -167,8 +168,39 @@ var querySessions = function(tx) {
 };
 \end{lstlisting}
 
+The improve the callback functionality, a helper method was used to provide 
+only the rows from the results set to the callback as the other two attributes 
+are based on non-select SQL statements.
+
+\subsection{Implementing the Rendering Function}
+The \texttt{Controller.js} file handles a lot of the application processing,
+particularly dynamic jQuery Mobile elements, but also with some geolocation
+processing. It is therefore the home of the function to render sessions onto
+the correct page.
+
+The rendering function acts as a callback to the aforementioned database query,
+and receives a Web SQL \texttt{SQLResultSetRowList} from the query. The 
+rendering function then enumerates over each row. From this information a 
+series of HTML can be generated and rendered on the page.
+
+First off, using the jQuery API, the element with the correct ID is found on 
+the page and bound to a variable. From this raw HTML was appended to this
+element, with each individuals attributes inserted at the correct points.
+Finally, the bound element is initialised as a jQuery Mobile list view and
+refreshed using the API.
+
+To improve this, several helper functions were written; one to convert the
+resulting rows from the \texttt{SQLResultSetRowList} to a standard JavaScript
+array to allow easier iteration. Such a function would be of use in extending
+the application, so it was well worth implementing.
+
+A second function to render an individual session was also implemented, so that
+the processing could be abstracted away. This function returned a list item 
+HTML element which could then easily be appended to the correct list in the
+main function.
+
 \subsection{Problems Encountered}
-% TODO Probably WebSQL standards.
+% TODO Probably Web SQL standards.
 
 \section{Preview}
 % TODO Screenshots
@@ -185,5 +217,8 @@ var querySessions = function(tx) {
 \section{Evaluation}
 
 
+\newpage
+\bibliographystyle{plain}
+\bibliography{citations}
 
 \end{document}
