@@ -7,6 +7,7 @@
 \usepackage{color}
 \usepackage[section]{placeins}
 \usepackage{paralist}
+\usepackage{fullpage}
 
 \usepackage{caption}
 \usepackage{subcaption}
@@ -200,18 +201,25 @@ HTML element which could then easily be appended to the correct list in the
 main function.
 
 \subsection{Problems Encountered}
-% TODO Probably Web SQL standards.
+The main issues found with this assignment related to the Web SQL database. The
+specification is very terse and, as such, doesn't contain a lot of information
+as to how the methods and objects actually work.
 
-\section{Preview}
-% TODO Screenshots
+Because of the nature of JavaScript it can be quite difficult to debug, so
+working out the problems with the database connection could be quite difficult
+on occasion.
+
+The main issue I ran into is there's no formal specification of the SQL
+statements Web SQL supports. When writing more advanced queries, particularly
+those involving joins between two or more tables, was a matter of constantly
+running the query to see if it would work then changing the statement until
+some form of correct result was gained.
+
+%\section{Preview}
+% TODO Screenshots if there's room
 
 \section{Testing and Debugging}
-% TODO Screenshots of the developer view and how testing occured
-
-\subsection{Debugging Using the Developer View in Chromium}
-
-
-\subsection{Testing on Android Emulator}
+% TODO Screenshots of the developer view, winre and emulator testing.
 
 
 \section{Evaluation}
