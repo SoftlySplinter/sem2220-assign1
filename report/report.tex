@@ -297,9 +297,53 @@ worked as part of a native application and not just a web application.
 \label{fig:testing}
 \end{figure}
 
-\section{Evaluation}
-%TODO
 
+\section{Evaluation}
+The list view is now dynamically loaded from the Web SQL database and the
+quality of the code used is as good as it can be, given the author's
+inexperience with JavaScript.
+
+Additional functionality was also added to load the details of a selected
+sessions and another level below this to show the talks. Unfortunately this
+doesn't appear to work in the Android emulator, possibly due to a bug in the
+code or due to a misinterpretation of how jQuery Mobile list view should
+function.
+
+Because of this extra functionality the JavaScript is a little messier but has
+more helper methods to abstract out too much repeated code. This has hopefully
+improved the quality of the code implemented.
+
+Breaking down the mark scheme the author has predicted the grades which should
+be gained for each part:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{| c | c | c |}\hline
+\textbf{Part}	& \textbf{Worth}	& \textbf{Predicted Grade} \\ \hline
+Documentation	& 30\%			& 25\% \\ 
+Implementation	& 50\%			& 45\% \\ 
+Flair		& 10\%			& 10\% \\ 
+Testing		& 10\%			& 8\% \\ \hline
+\textbf{Total}	& 100\%			& 88\% \\ \hline
+\end{tabular}
+\end{table}
+
+The author feels a mark of around 88\% should be awarded, the values above were
+chosen for the following reasons:
+
+\begin{description}
+\item[Implementation] The implementation works to, and beyond, the
+specification and is done using the best quality JavaScript the author knows
+without a huge amount of experience.
+\item[Flair] Additional functionality has been added to the web application.
+\item[Testing] Evidence of testing using developer tools and mobile emulators
+has been provided in this report.
+\item[Documentation] This reports gives the details of the process taken to
+implement the dynamic loading of sessions from the Web SQL database and shows
+the problems encountered during this process.
+\end{description}
+
+%TODO what was learned.
 
 \newpage
 \bibliographystyle{plain}
