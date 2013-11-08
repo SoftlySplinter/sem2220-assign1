@@ -1,4 +1,4 @@
-\documentclass[10pt, a4paper]{article}
+\documentclass[11pt, a4paper]{article}
 
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -92,8 +92,6 @@ Web SQL database created in HTML 5 storage when the Conference Web Application i
 initially loaded. The results of this query are then dynamically rendered in
 the sessions page as a part of a jQuery Mobile list view.
 
-
-
 \section{Implementation}
 This section describes the process taken to implement the dynamic loading of
 sessions into the session view from the pre-existing Web SQL database. There
@@ -123,34 +121,17 @@ original author which would select everything from the sessions table where the
 session was on the first day of the conference.
 
 \begin{lstlisting}[language=sql]
-SELECT * FROM sessions WHERE sessions.day_id = '1'
-                       ORDER BY sessions.starttime ASC
+SELECT * FROM sessions WHERE sessions.day_id = '1' 
+ORDER BY sessions.starttime ASC
 \end{lstlisting}
 
 From this it is a simple matter of calling a method from the transaction method
-as shown:
-
-\begin{lstlisting}[language=javascript]
-var querySessions = function(tx) {
-  var sql = // SQL Statement
-  tx.execute_sql(sql, [], callback, error_callback);
-};
-\end{lstlisting}
-
-Where the callback is the rendering function.
+\texttt{execute\_sql(sql, params, callback, error)}, where the callback is the 
+rendering function.
 
 To make this statement a little more secure, as recommended by the API, it was
-changed to be:
-
-\begin{lstlisting}[language=javascript]
-var querySessions = function(tx) {
-  var sql = "SELECT * FROM sessions WHERE session.day_id = ? 
-             ORDER BY sessions.starttime ASC";
-  tx.execute_sql(sql, [1], callback, error_callback);
-};
-\end{lstlisting}
-
-Though the query is completely isolated from user input, it may not be in the
+changed to use the parameters for inserting the day identifier. Though the 
+query is completely isolated from user input, it may not remain so in the 
 future.
 
 To enhance this further, joining the days table to include the name of the day
@@ -158,15 +139,10 @@ that the session was on. This could have been hard coded in the rendering
 function, but again it may not remain limited to the first day so doing this
 dynamically will be a benefit in the future.
 
-\begin{lstlisting}[language=javascript]
-var querySessions = function(tx) {
-  var sql = "SELECT sessions.* days.day FROM sessions, days 
-             WHERE sessions.day_id = ? 
-             AND days._id = sessions.day_id 
-             ORDER BY sessions.dayid 
-             AND sessions.starttime ASC";
-  tx.execute_sql(sql, [1], callback, error_callback);
-};
+\begin{lstlisting}[language=sql]
+SELECT sessions.* days.day FROM sessions, days 
+WHERE sessions.day_id = ? AND days._id = sessions.day_id 
+ORDER BY sessions.dayid AND sessions.starttime ASC
 \end{lstlisting}
 
 The improve the callback functionality, a helper method was used to provide 
@@ -209,26 +185,18 @@ Because of the nature of JavaScript it can be quite difficult to debug, so
 working out the problems with the database connection could be quite difficult
 on occasion.
 
-The main issue I ran into is there's no formal specification of the SQL
+The main issue encountered is that there's no formal specification of the SQL
 statements Web SQL supports. When writing more advanced queries, particularly
 those involving joins between two or more tables, was a matter of constantly
 running the query to see if it would work then changing the statement until
 some form of correct result was gained.
 
-%\section{Preview}
-% TODO Screenshots if there's room
-
 \section{Testing and Debugging}
-% TODO Screenshots of the developer view, winre and emulator testing.
 The Chrome developer tools were used to debug the conference web application,
-an in-browser implementation using Web Inspector.%TODO \cite
+an in-browser implementation using Web Inspector. 
 There are several similar tools which also use Web Inspector, including wienre,
 a locally run webserver which acts very similarly to the developer tools. The
 Apple Web Inspector is another similar product.
-
-The Chrome developer tools were the easiest solution as they are native to the
-Google family of browsers and provide support without the need for setting up
-additional tools.
 
 The Opera mobile browser was used to test the mobile version of the web
 application to ensure it viewed correctly on mobile devices. 
@@ -328,7 +296,7 @@ tasks in different ways. Both of these seem like useful libraries and which
 could replace the existing implementation of Web SQL in the web application.
 
 Breaking down the mark scheme the author has predicted the grades which should
-be gained for each part:
+be gained for each part is shown in table~\ref{tab:marks}
 
 \begin{table}[h]
 \centering
@@ -340,6 +308,8 @@ Flair		& 10\%			& 10\% \\
 Testing		& 10\%			& 8\% \\ \hline
 \textbf{Total}	& 100\%			& 88\% \\ \hline
 \end{tabular}
+\caption{Break Down of Marks}
+\label{tab:marks}
 \end{table}
 
 The author feels a mark of around 88\% should be awarded, the values above were
